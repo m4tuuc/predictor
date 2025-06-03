@@ -60,7 +60,7 @@ def bagging(datacorr, columnas_features, columna_target, path_guardado_modelo, p
             min_samples_leaf=4
         ),
 
-        n_estimators= 120,
+        n_estimators= 120, # modificar
         max_samples= 0.8,
         max_features= 0.8,
         random_state=42,   
@@ -125,7 +125,7 @@ def predecir_rendimiento_usuario(datos_usuario_df, path_modelo_cargado):
         return None
 
 if __name__ == "__main__":
-    df = pd.read_csv("./dataset/yield_proc.csv")
+    df = pd.read_csv("DATA")
 
     df_principal = df
     df_principal.dropna(subset=['hg/ha_yield'], inplace=True) 
