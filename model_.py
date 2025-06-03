@@ -11,7 +11,7 @@ import joblib
 from sklearn.model_selection import cross_val_score
 
 
-def crear_y_entrenar_bagging_regressor(datacorr, columnas_features, columna_target, path_guardado_modelo, path_guardado_preprocesador):
+def bagging(datacorr, columnas_features, columna_target, path_guardado_modelo, path_guardado_preprocesador):
     print(f"\n--- Entrenando Modelo ---")
     df = pd.read_csv("./dataset/yield_proc.csv")
     X = df[columnas_features]
@@ -52,6 +52,7 @@ def crear_y_entrenar_bagging_regressor(datacorr, columnas_features, columna_targ
         remainder='drop' 
     )
 
+    # modelo
     model = BaggingRegressor(
         estimator=DecisionTreeRegressor(
             max_depth=8,
@@ -76,6 +77,7 @@ def crear_y_entrenar_bagging_regressor(datacorr, columnas_features, columna_targ
     print(f"\nCross-validation R² scores: {cv_scores}")
     print(f"Mean CV R²: Varianza de {cv_scores.mean():.4f} STD: (+/- {cv_scores.std() * 2:.4f})") # vamos a esperar una estimacion general del rendimiento del modelo
 
+    # modelo final
     pipeline_completo = Pipeline(steps=[('preprocessor', preprocesador),
                                         ('regressor', model)])
 
@@ -87,9 +89,9 @@ def crear_y_entrenar_bagging_regressor(datacorr, columnas_features, columna_targ
     print(f"Promedio: {np.mean(scores):.3f} ± {np.std(scores):.3f}")
 
     score_val = pipeline_completo.score(X_val, y_val) 
-    print(f"R^2 en conjunto de validación: {score_val:.4f}")
+    print(f"R^2 en conjunto de validacion: {score_val:.4f}")
     if hasattr(pipeline_completo.named_steps['regressor'], 'oob_score_') and pipeline_completo.named_steps['regressor'].oob_score_:
-         print(f"Puntuación Out-of-Bag del BaggingRegressor: {pipeline_completo.named_steps['regressor'].oob_score_:.4f}")
+         print(f"Puntuacion Out-of-Bag del BaggingRegressor: {pipeline_completo.named_steps['regressor'].oob_score_:.4f}")
     try:
         joblib.dump(pipeline_completo, path_guardado_modelo)
         print(f"Pipeline completo guardado en: {path_guardado_modelo}")
@@ -138,7 +140,7 @@ if __name__ == "__main__":
 
 
     # Entrenar y guardar el modelo
-    pipeline_entrenado = crear_y_entrenar_bagging_regressor(
+    pipeline_entrenado = bagging(
         df_principal,
         columnas_features_seleccionadas,
         columna_target_seleccionada,
